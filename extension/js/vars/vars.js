@@ -25,6 +25,7 @@ var defaultDomains = [
   "reddit.com",
   "buzzfeed.com",
   "youtube.com",
+  "mail.google.com",
   "gmail.com",
   "ladbible.com",
   "news.ycombinator.com",
@@ -48,9 +49,43 @@ var defaultDomains = [
   "imgur.com",
   "tumblr.com",
   "thesportbible.com",
-  "telegraph.co.uk",
-  "vk.com",
-  "dailymaverick.co.za"
+  "telegraph.co.uk"
+];
+
+// Default domains
+var suggestDomains = [
+  "messenger.com",
+  "facebook.com",
+  "twitter.com",
+  "linkedin.com",
+  "reddit.com",
+  "buzzfeed.com",
+  "youtube.com",
+  "mail.google.com",
+  "gmail.com",
+  "ladbible.com",
+  "news.ycombinator.com",
+  "instagram.com",
+  "pinterest.com",
+  "theguardian.com",
+  "bbc.co.uk/news",
+  "tinder.com",
+  "theguardian.co.uk",
+  "dailymail.co.uk",
+  "iwastesomuchtime.com",
+  "nytimes.com",
+  "breitbart.com",
+  "wsj.com",
+  "usatoday.com",
+  "vox.com",
+  "foxnews.com",
+  "cnn.com",
+  "huffingtonpost.com",
+  "mailonline.com",
+  "imgur.com",
+  "tumblr.com",
+  "thesportbible.com",
+  "telegraph.co.uk"
 ];
 
 // Default non-domain settings

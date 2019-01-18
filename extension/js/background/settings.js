@@ -29,9 +29,6 @@ function inDomainsSetting(url) {
     if (url.includes(key)) {
       domain = key;
     }
-    // Whitelist goes here
-    // Would need to just add it to vars.js, that's about it
-    // And obviously create UX for it
   });
   return domain;
 }
