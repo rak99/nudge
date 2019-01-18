@@ -145,16 +145,26 @@ function initOn() {
 }
 
 button.addEventListener("mousedown", sliderdown, true);
+button.addEventListener("touchstart", sliderTouchdown, true);
 
 // Vars for the slider
 var buttonPosition = 0;
 var mousePosition = false;
+var touchPosition = false;
 var stickyMultiplier = 1;
 
 function getPageLeft(el) {
   var rect = el.getBoundingClientRect();
   var docEl = document.documentElement;
+  // console.log(el.getBoundingClientRect);
+  // console.log(`rect.left + ${rect.left}`);
+  // console.log(`window.pageXOffset + ${window.pageXOffset}`);
+  // console.log(`docEl.scrollLeft + ${docEl.scrollLeft}`);
+  var rectToString = (rect.left).toString();
+  rectAfterDot = rectToString.substring((rectToString).indexOf('.') + 1, rectToString.length)
+  // console.log(rectAfterDot);
   return rect.left + (window.pageXOffset || docEl.scrollLeft || 0);
+
 }
 
 function sliderdown(e) {
@@ -175,16 +185,71 @@ function sliderdown(e) {
   document.addEventListener("mousemove", slidermove, true);
 }
 
+function sliderTouchdown(e) {
+  // Find where the button is
+  var buttonDiff = getPageLeft(button) - getPageLeft(slider);
+  // Set button position as where button is relative to slider
+  // Set to zero if you have a negatcentre.classList.remove("active");ive value 0)
+  if (buttonDiff > 0) {
+    buttonPosition = Math.round(buttonDiff);
+  } else {
+    buttonPosition = 0;
+  }
+  // Set mouse position as wherever mouse is
+  touchPosition = e.changedTouches[0].clientX;
+  button.classList.remove("returning");
+  // bind late
+  document.addEventListener("touchend", sliderupTouch, true);
+  document.addEventListener("touchmove", slidermoveTouch, true);
+}
+
 function sliderup(e) {
   // Position for testing whether to initOn, or return
+  // console.log(`position 1: ${position}`)
+  // console.log(`getPageLeft(button) and slider: ${getPageLeft(button)} + ${getPageLeft(slider)}`);
   var position = getPageLeft(button) - getPageLeft(slider);
+  // console.log(`getPageLeft(button) and slider: ${getPageLeft(button)} + ${getPageLeft(slider)}`);
+  // console.log(`position 2: ${position}`)
   button.classList.remove("active");
   centre.classList.remove("active");
   // unbind
   document.removeEventListener("mousemove", slidermove, true);
   document.removeEventListener("mouseup", sliderup, true);
   // Initiate on
-  if (position >= slider.offsetWidth - button.offsetWidth) {
+  // console.log('position', position);
+
+  // console.log('sliderOffset', slider.offsetWidth);
+  
+  // console.log('buttonOffset', button.offsetWidth);
+  
+  // console.log('diff', (slider.offsetWidth - button.offsetWidth));
+  
+  // console.log('initOn', 'position >= slider.offsetWidth - button.offsetWidth');
+
+  if ( Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
+    initOn();
+  } else {
+    if (stickyMultiplier === 1) {
+      button.style.left = 0 + "px";
+      button.classList.add("returning");
+      background.style.opacity = 0;
+    }
+  }
+}
+
+function sliderupTouch(e) {
+
+  // Position for testing whether to initOn, or return
+  var position = getPageLeft(button) - getPageLeft(slider);
+  button.classList.remove("active");
+  centre.classList.remove("active");
+  // unbind
+  document.removeEventListener("touchmove", slidermoveTouch, true);
+  document.removeEventListener("touchend", sliderupTouch, true);
+
+  // Initiate on
+
+  if ( Math.round(position) >= slider.offsetWidth - button.offsetWidth) {
     initOn();
   } else {
     if (stickyMultiplier === 1) {
@@ -198,10 +263,42 @@ function sliderup(e) {
 function slidermove(e) {
   // Difference between where mouse was on click, and where mouse is now
   var difference = 0;
+  // console.log(e.clientX - mousePosition);
   if (e.clientX - mousePosition > 0) {
     difference = Math.round((e.clientX - mousePosition) / stickyMultiplier);
   } else {
     difference = Math.round(e.clientX - mousePosition);
+  }
+
+  // Filter set
+  var blurExtent = (difference + buttonPosition) / slider.offsetWidth;
+  // FIXME: blur max size should depend on scale of background photos.
+  // backgroundEnhanced.style.filter = `blur(${blurExtent}px)`;
+  background.style.opacity = blurExtent.toFixed(2);
+  // FIXME: maybe hide the enhanced background and then blur the other one more
+
+  // If you go negative, set to 0px
+  if (difference + buttonPosition < 0) {
+    button.style.left = "0px";
+    // If you go further than end of slider,
+  } else if (
+    difference + buttonPosition + button.offsetWidth >=
+    slider.offsetWidth
+  ) {
+    button.style.left = slider.offsetWidth - button.offsetWidth + "px";
+  } else {
+    button.style.left = difference + buttonPosition + "px";
+  }
+}
+
+function slidermoveTouch(e) {
+  // Difference between where mouse was on click, and where mouse is now
+  var difference = 0;
+  // console.log(e.changedTouches[0].clientX - touchPosition);
+  if (e.changedTouches[0].clientX - touchPosition > 0) {
+    difference = Math.round((e.changedTouches[0].clientX - touchPosition) / stickyMultiplier);
+  } else {
+    difference = Math.round(e.changedTouches[0].clientX - touchPosition);
   }
 
   // Filter set
